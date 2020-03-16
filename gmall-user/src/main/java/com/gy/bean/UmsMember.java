@@ -1,7 +1,8 @@
 package com.gy.bean;
 
-import org.springframework.data.annotation.Id;
-
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,7 +10,10 @@ import java.util.Date;
  * Created by gaoyong on 2020/3/15.
  */
 public class UmsMember implements Serializable {
+    //这个注解是标示主键
     @Id
+    //这个注解的作用就是当我们插入一条数据时，插入成功后会返回他的主键（主键返回策略）
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long memberLevelId;
     private String username;

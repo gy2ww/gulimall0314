@@ -1,6 +1,7 @@
 package com.gy.controller;
 
 import com.gy.bean.UmsMember;
+import com.gy.bean.UmsMemberReceiveAddress;
 import com.gy.service.userService;
 import jdk.nashorn.internal.runtime.logging.Logger;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,11 @@ public class userController {
     @Resource
     private userService userService;
 
+    @RequestMapping("/getReceiveAddress")
+    public List<UmsMemberReceiveAddress> getReceiveAddressByMemberId(Long MemberId){
+        List<UmsMemberReceiveAddress> umsMemberReceiveAddressList = userService.getReceiveAddressByMemberId(MemberId);
+        return umsMemberReceiveAddressList;
+    }
     @RequestMapping("/getAllUser")
     @ResponseBody
     public List<UmsMember> getAllUser(){
