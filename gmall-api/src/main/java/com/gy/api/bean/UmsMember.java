@@ -1,4 +1,4 @@
-package com.gy.bean;
+package com.gy.api.bean;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

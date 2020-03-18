@@ -1,6 +1,6 @@
-package com.gy.mapper;
+package com.gy.user.mapper;
 
-import com.gy.bean.UmsMemberReceiveAddress;
+import com.gy.api.bean.UmsMemberReceiveAddress;
 import tk.mybatis.mapper.common.Mapper;
 
 /**
