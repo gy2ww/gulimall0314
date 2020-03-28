@@ -1,5 +1,6 @@
 package com.gy.service.impl;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.gy.api.bean.PmsBaseAttrInfo;
 import com.gy.api.bean.PmsBaseAttrValue;
@@ -38,4 +39,43 @@ public class AttrServiceImpl implements AttrService {
         List<PmsBaseAttrValue> pmsBaseAttrValueList = pmsBaseAttrValueMapper.selectByExample(example);
         return pmsBaseAttrValueList;
     }
+
+    @Override
+    public String saveAttrInfo(PmsBaseAttrInfo pmsBaseAttrInfo) {
+        String id = pmsBaseAttrInfo.getId();
+        int key = 0;
+        if (StringUtils.isBlank(id)) {
+            int i = pmsBaseAttrInfoMapper.insertSelective(pmsBaseAttrInfo);
+
+            List<PmsBaseAttrValue> attrValueList = pmsBaseAttrInfo.getAttrValueList();
+            for (PmsBaseAttrValue pmsBaseAttrValue : attrValueList) {
+                if (i > 0) {
+                    pmsBaseAttrValue.setAttrId(pmsBaseAttrInfo.getId());
+                    key = pmsBaseAttrValueMapper.insertSelective(pmsBaseAttrValue);
+                }
+            }
+            if (key > 0) {
+                return "success";
+            }
+
+        } else {
+            //修改属性
+            Example example = new Example(PmsBaseAttrInfo.class);
+            Example.Criteria criteria = example.createCriteria();
+            criteria.andEqualTo("id",id);
+            pmsBaseAttrInfoMapper.updateByExampleSelective(pmsBaseAttrInfo,example);
+            //修改属性值
+            List<PmsBaseAttrValue> attrValueList = pmsBaseAttrInfo.getAttrValueList();
+            for (PmsBaseAttrValue pmsBaseAttrValue : attrValueList) {
+                Example example1 = new Example(PmsBaseAttrValue.class);
+                example1.createCriteria().andEqualTo("id",pmsBaseAttrValue.getId());
+                key = pmsBaseAttrValueMapper.updateByExampleSelective(pmsBaseAttrValue, example1);
+            }
+            if(key>0){
+                return "success";
+            }
+        }
+        return "failed";
+    }
+
 }

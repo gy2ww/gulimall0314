@@ -22,4 +22,11 @@ public interface AttrService {
      * @return
      */
     List<PmsBaseAttrValue> getAttrValueList(String attrId);
+
+    /**
+     * 添加/修改平台属性
+     * @param pmsBaseAttrInfo
+     * @return
+     */
+    String saveAttrInfo(PmsBaseAttrInfo pmsBaseAttrInfo);
 }
