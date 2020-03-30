@@ -2,6 +2,7 @@ package com.gy.api.service;
 
 import com.gy.api.bean.PmsProductImage;
 import com.gy.api.bean.PmsProductSaleAttr;
+import com.gy.api.bean.PmsSkuInfo;
 
 import java.util.List;
 
@@ -24,4 +25,11 @@ public interface SkuService {
      * @return
      */
     List<PmsProductSaleAttr> spuSaleAttrList(String spuId);
+
+    /**
+     * 添加商品sku相关
+     * @param pmsSkuInfo
+     * @return
+     */
+    String saveSkuInfo(PmsSkuInfo pmsSkuInfo);
 }

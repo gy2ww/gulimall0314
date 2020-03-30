@@ -1,14 +1,14 @@
 package com.gy.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.gy.api.bean.PmsProductImage;
-import com.gy.api.bean.PmsProductSaleAttr;
+import com.alibaba.fastjson.JSONObject;
+import com.gy.api.bean.*;
 import com.gy.api.service.SkuService;
-import com.gy.mapper.PmsProductImageMapper;
-import com.gy.mapper.PmsProductSaleAttrMapper;
+import com.gy.mapper.*;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +21,16 @@ public class SkuServiceImpl implements SkuService {
     private PmsProductImageMapper pmsProductImageMapper;
     @Resource
     private PmsProductSaleAttrMapper pmsProductSaleAttrMapper;
+    @Resource
+    private PmsProductSaleAttrValueMapper pmsProductSaleAttrValueMapper;
+    @Resource
+    private PmsSkuInfoMapper pmsSkuInfoMapper;
+    @Resource
+    private PmsSkuImageMapper pmsSkuImageMapper;
+    @Resource
+    private PmsSkuAttrValueMapper pmsSkuAttrValueMapper;
+    @Resource
+    private PmsSkuSaleAttrValueMapper pmsSkuSaleAttrValueMapper;
     @Override
     public List<PmsProductImage> spuImageList(String spuId) {
 
@@ -36,6 +46,43 @@ public class SkuServiceImpl implements SkuService {
         Example example = new Example(PmsProductSaleAttr.class);
         example.createCriteria().andEqualTo("spuId",spuId);
         List<PmsProductSaleAttr> pmsProductSaleAttrList = pmsProductSaleAttrMapper.selectByExample(example);
+        for (PmsProductSaleAttr pmsProductSaleAttr : pmsProductSaleAttrList) {
+            Example example1 = new Example(PmsProductSaleAttrValue.class);
+            example1.createCriteria().andEqualTo("spuId",pmsProductSaleAttr.getSpuId()).andEqualTo("saleAttrId",pmsProductSaleAttr.getSaleAttrId());
+            List<PmsProductSaleAttrValue> pmsProductSaleAttrValues1 = pmsProductSaleAttrValueMapper.selectByExample(example1);
+            pmsProductSaleAttr.setSpuSaleAttrValueList(pmsProductSaleAttrValues1);
+        }
+
         return pmsProductSaleAttrList;
+    }
+
+    @Override
+    public String saveSkuInfo(PmsSkuInfo pmsSkuInfo) {
+
+        int i=0;
+        //添加sku主表
+        pmsSkuInfoMapper.insertSelective(pmsSkuInfo);
+        //添加skuImg
+        List<PmsSkuImage> skuImageList = pmsSkuInfo.getSkuImageList();
+        for (PmsSkuImage pmsSkuImage : skuImageList) {
+            pmsSkuImage.setSkuId(pmsSkuInfo.getId());
+            pmsSkuImageMapper.insertSelective(pmsSkuImage);
+        }
+        //添加sku平台属性
+        List<PmsSkuAttrValue> skuAttrValueList = pmsSkuInfo.getSkuAttrValueList();
+        for (PmsSkuAttrValue pmsSkuAttrValue : skuAttrValueList) {
+            pmsSkuAttrValue.setSkuId(pmsSkuInfo.getId());
+            pmsSkuAttrValueMapper.insertSelective(pmsSkuAttrValue);
+        }
+        //添加sku销售属性
+        List<PmsSkuSaleAttrValue> skuSaleAttrValueList = pmsSkuInfo.getSkuSaleAttrValueList();
+        for (PmsSkuSaleAttrValue pmsSkuSaleAttrValue : skuSaleAttrValueList) {
+            pmsSkuSaleAttrValue.setSkuId(pmsSkuInfo.getId());
+            i = pmsSkuSaleAttrValueMapper.insertSelective(pmsSkuSaleAttrValue);
+        }
+        if(i>0){
+            return "success";
+        }
+        return "failed";
     }
 }
