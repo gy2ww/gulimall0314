@@ -68,4 +68,25 @@ public class SpuServiceImpl implements SpuService {
         }
         return "failed";
     }
+
+    @Override
+    public List<PmsProductSaleAttr> spuSaleAttrListCheckBySku(String spuId,String skuId) {
+
+        //这种方法有瑕疵，就是把数据返回页面的时候没有默认选中状态
+  /*      //spu的销售属性集合
+        Example example = new Example(PmsProductSaleAttr.class);
+        example.createCriteria().andEqualTo("spuId",spuId);
+        List<PmsProductSaleAttr> pmsProductSaleAttrList = pmsProductSaleAttrMapper.selectByExample(example);
+
+        //spu的销售属性值集合
+        for (PmsProductSaleAttr pmsProductSaleAttr : pmsProductSaleAttrList) {
+            Example example1 = new Example(PmsProductSaleAttrValue.class);
+            example1.createCriteria().andEqualTo("spuId",spuId).andEqualTo("saleAttrId",pmsProductSaleAttr.getSaleAttrId());
+            List<PmsProductSaleAttrValue> pmsProductSaleAttrValues = pmsProductSaleAttrValueMapper.selectByExample(example1);
+            pmsProductSaleAttr.setSpuSaleAttrValueList(pmsProductSaleAttrValues);
+        }
+        return pmsProductSaleAttrList;*/
+     List<PmsProductSaleAttr> pmsProductSaleAttrList = pmsProductSaleAttrMapper.selectSpuSaleAttrListCheckBySku(spuId,skuId);
+     return pmsProductSaleAttrList;
+    }
 }

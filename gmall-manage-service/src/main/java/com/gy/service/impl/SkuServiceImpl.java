@@ -1,7 +1,6 @@
 package com.gy.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.alibaba.fastjson.JSONObject;
 import com.gy.api.bean.*;
 import com.gy.api.service.SkuService;
 import com.gy.mapper.*;
@@ -84,5 +83,36 @@ public class SkuServiceImpl implements SkuService {
             return "success";
         }
         return "failed";
+    }
+
+    @Override
+    public PmsSkuInfo getSkuById(String skuId) {
+        //sku主表
+        Example example = new Example(PmsSkuInfo.class);
+        example.createCriteria().andEqualTo("id",skuId);
+        PmsSkuInfo pmsSkuInfo = pmsSkuInfoMapper.selectOneByExample(example);
+        //skuImage
+        Example example1 = new Example(PmsSkuImage.class);
+        example1.createCriteria().andEqualTo("skuId",skuId);
+        List<PmsSkuImage> pmsSkuImages = pmsSkuImageMapper.selectByExample(example1);
+        pmsSkuInfo.setSkuImageList(pmsSkuImages);
+        //skuattrvalue平台属性
+        PmsSkuAttrValue pmsSkuAttrValue = new PmsSkuAttrValue();
+        pmsSkuAttrValue.setSkuId(skuId);
+        List<PmsSkuAttrValue> pmsSkuAttrValueList = pmsSkuAttrValueMapper.select(pmsSkuAttrValue);
+        pmsSkuInfo.setSkuAttrValueList(pmsSkuAttrValueList);
+        //skusaleattrvalue平台销售属性
+        PmsSkuSaleAttrValue pmsSkuSaleAttrValue = new PmsSkuSaleAttrValue();
+        pmsSkuSaleAttrValue.setSkuId(skuId);
+        List<PmsSkuSaleAttrValue> pmsSkuSaleAttrValueList = pmsSkuSaleAttrValueMapper.select(pmsSkuSaleAttrValue);
+        pmsSkuInfo.setSkuSaleAttrValueList(pmsSkuSaleAttrValueList);
+        return pmsSkuInfo;
+    }
+
+    @Override
+    public List<PmsSkuInfo> getSkuSaleAttrValueListBySpu(String spuId) {
+
+       List<PmsSkuInfo> pmsSkuInfoList =  pmsSkuInfoMapper.selectSkuSaleAttrValueListBySpu(spuId);
+        return pmsSkuInfoList;
     }
 }

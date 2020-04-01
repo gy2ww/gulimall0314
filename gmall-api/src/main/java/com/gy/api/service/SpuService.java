@@ -30,4 +30,11 @@ public interface SpuService {
      * @return
      */
     String saveSpuInfo(PmsProductInfo pmsProductInfo);
+
+    /**
+     * 根据productId查询spu的销售属性集合和销售属性值集合
+     * @param spuId
+     * @return
+     */
+    List<PmsProductSaleAttr> spuSaleAttrListCheckBySku(String spuId,String skuId);
 }

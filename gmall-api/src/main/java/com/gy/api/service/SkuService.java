@@ -32,4 +32,18 @@ public interface SkuService {
      * @return
      */
     String saveSkuInfo(PmsSkuInfo pmsSkuInfo);
+
+    /**
+     * 商品sku详情
+     * @param skuId
+     * @return
+     */
+    PmsSkuInfo getSkuById(String skuId);
+
+    /**
+     * 根据productId查找skuInfo集合和skuSaleAttrValue集合，组装成hash表返回前端页面
+     * @param spuId
+     * @return
+     */
+    List<PmsSkuInfo> getSkuSaleAttrValueListBySpu(String spuId);
 }
