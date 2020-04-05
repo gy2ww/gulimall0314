@@ -9,11 +9,16 @@ import com.gy.api.service.SkuService;
 
 import com.gy.api.service.SpuService;
 import jdk.nashorn.internal.runtime.logging.Logger;
+import org.springframework.boot.autoconfigure.cache.CacheProperties;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +36,13 @@ public class ItemController {
     @Reference
     private SpuService spuService;
 
-    @RequestMapping("/{skuId}.html")
-    public String item(@PathVariable String skuId, ModelMap modelMap) {
 
-        PmsSkuInfo pmsSkuInfo = skuService.getSkuById(skuId);
+    @RequestMapping("/{skuId}.html")
+    public String item(@PathVariable String skuId, ModelMap modelMap, HttpServletRequest request) {
+
+        //获取ip地址
+        String ip = request.getRemoteAddr();
+        PmsSkuInfo pmsSkuInfo = skuService.getSkuById(skuId,ip);
         modelMap.put("skuInfo", pmsSkuInfo);
         //根据product_id查询spu的销售属性列表
         List<PmsProductSaleAttr> pmsProductSaleAttrList = spuService.spuSaleAttrListCheckBySku(pmsSkuInfo.getSpuId(), pmsSkuInfo.getId());

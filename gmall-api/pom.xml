@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <dependencies>
-        <!--同样mapper-->
+        <!--通用mapper-->
         <dependency>
             <groupId>tk.mybatis</groupId>
             <artifactId>mapper-spring-boot-starter</artifactId>

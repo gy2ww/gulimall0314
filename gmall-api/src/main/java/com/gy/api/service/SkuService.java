@@ -38,7 +38,7 @@ public interface SkuService {
      * @param skuId
      * @return
      */
-    PmsSkuInfo getSkuById(String skuId);
+    PmsSkuInfo getSkuById(String skuId,String ip);
 
     /**
      * 根据productId查找skuInfo集合和skuSaleAttrValue集合，组装成hash表返回前端页面

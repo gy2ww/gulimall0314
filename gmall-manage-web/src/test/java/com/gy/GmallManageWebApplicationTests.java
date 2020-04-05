@@ -30,10 +30,10 @@ public class GmallManageWebApplicationTests {
 		StorageClient storageClient = new StorageClient(trackerServer,null);
 		//上传图片,fastdfs会把url路径里的东西以数组的形式返回[group1, M00/00/00/wKgCbl5-Bl-EF9fcAAAAAKuSSV8580.jpg]
         String[] str = storageClient.upload_appender_file("C:/Users/Administrator/Desktop/Me.jpg","jpg",null);
-       // http://192.168.2.110/group1/M00/00/00/wKgCbl5-C2eEKryOAAAAAKuSSV8090.jpg
-        //http://192.168.2.110/group1/M00/00/00/wKgCbl5-C--EAm6NAAAAAKuSSV8660.jpg
+       // http://192.168.0.8/group1/M00/00/00/wKgCbl5-C2eEKryOAAAAAKuSSV8090.jpg
+        //http://192.168.0.8/group1/M00/00/00/wKgCbl5-C--EAm6NAAAAAKuSSV8660.jpg
         //前缀
-        String url = "http://192.168.2.110";
+        String url = "http://192.168.0.8";
         for (String s : str) {
           url=url+"/"+s;
         }

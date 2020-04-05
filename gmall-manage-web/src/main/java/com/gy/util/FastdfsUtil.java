@@ -24,7 +24,7 @@ public class FastdfsUtil {
      */
     public String fileUpload(MultipartFile multipartFile){
 
-        String imgUrl = "http://192.168.2.110";
+        String imgUrl = "http://192.168.0.8";
         //获取配置文件
         String path = FastdfsUtil.class.getResource("/tracker.conf").getPath();
 

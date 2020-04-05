@@ -32,7 +32,7 @@ public interface SpuService {
     String saveSpuInfo(PmsProductInfo pmsProductInfo);
 
     /**
-     * 根据productId查询spu的销售属性集合和销售属性值集合
+     * 根据productId查询spu的销售属性集合和销售属性值集合，并且把当前的销售属性默认选中
      * @param spuId
      * @return
      */
