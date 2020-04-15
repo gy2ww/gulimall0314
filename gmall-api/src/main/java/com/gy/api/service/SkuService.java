@@ -46,4 +46,10 @@ public interface SkuService {
      * @return
      */
     List<PmsSkuInfo> getSkuSaleAttrValueListBySpu(String spuId);
+
+    /**
+     * 查询所有skuInfo
+     * @return
+     */
+    List<PmsSkuInfo> getAllSku();
 }

@@ -74,7 +74,6 @@ public class ItemController {
     @RequestMapping("/index")
     public String index(ModelMap modelMap) {
 
-
         modelMap.put("gaoyong", "是个帅哥！！！");
         return "index";
 
