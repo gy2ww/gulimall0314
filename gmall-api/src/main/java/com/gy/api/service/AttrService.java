@@ -4,6 +4,7 @@ import com.gy.api.bean.PmsBaseAttrInfo;
 import com.gy.api.bean.PmsBaseAttrValue;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by gaoyong on 2020/3/23.
@@ -29,4 +30,11 @@ public interface AttrService {
      * @return
      */
     String saveAttrInfo(PmsBaseAttrInfo pmsBaseAttrInfo);
+
+    /**
+     * 根据attrvalueId查询sku对应的平台属性集合
+     * @param set
+     * @return
+     */
+    List<PmsBaseAttrInfo> getAttrValueListByValueId(Set<String> set);
 }

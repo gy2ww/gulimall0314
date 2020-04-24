@@ -13,4 +13,18 @@ public interface userService {
     List<UmsMemberReceiveAddress> getReceiveAddressByMemberId(Long memberId);
 
     int modifyUserAddressDetail(Long memberId);
+
+    /**
+     * 验证登录
+     * @param umsMember
+     * @return
+     */
+    UmsMember loginCheck(UmsMember umsMember);
+
+    /**
+     * 把token存入redis
+     * @param id
+     * @param token
+     */
+    void pushCache(Long id, String token);
 }

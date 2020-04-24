@@ -268,7 +268,7 @@
                 <div class="box-btns clear">
                     <div class="box-btns-one">
                         <form id="itemForm" action="http://cart.gmall.com:8087/addToCart" method="post">
-                            <input type="text" name="num" id="" value="1"/>
+                            <input type="text" name="quantity" id="" value="1"/>
                             <input type="hidden" name="skuId" th:value="${skuInfo?.id}"/>
 
                             <div class="box-btns-one1">
@@ -290,7 +290,7 @@
                     <div id="cartBtn" style="cursor:pointer;" canClick="1" onclick="addToCart(this)"
                          class="box-btns-two">
 
-                        放入购物车
+                        加入购物车
 
                     </div>
                 </div>
@@ -1094,7 +1094,7 @@
        var skuId = json_skuIds[k];
        //如果这个key对应的value有值，就代表这个商品的sku存在就跳转到对应的sku页面
        if(skuId){
-           window.location.href="http://localhost:8082/"+skuId+".html";
+           window.location.href="http://item.gmall.com:8082/"+skuId+".html";
        }else {
            //这个就代表如果选中的销售属性没有对应的sku，那么购物车的按钮就置灰，不可点击
            $("#cartBtn").attr("class", "box-btns-two-off");

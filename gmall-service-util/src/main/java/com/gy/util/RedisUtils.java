@@ -1,5 +1,7 @@
 package com.gy.util;
 
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -8,6 +10,7 @@ import redis.clients.jedis.JedisPoolConfig;
 /**
  * Created by gaoyong on 2020/4/2.
  */
+
 public class RedisUtils {
 
     private JedisPool jedisPool;

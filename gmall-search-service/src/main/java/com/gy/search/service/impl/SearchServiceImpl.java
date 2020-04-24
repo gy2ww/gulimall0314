@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -55,10 +57,13 @@ public class SearchServiceImpl implements SearchService {
             PmsSearchSkuInfo source = hit.source;
             //因为在es中高亮的标签和source是平级的，所以我们要把highlight中的高亮的关键字赋给source中的相同字段
             Map<String, List<String>> highlight = hit.highlight;
-            //取出higlight中的第一个高亮元素
-            String skuName = highlight.get("skuName").get(0);
-            //赋给source中的字段
-            source.setSkuName(skuName);
+            //如果不用关键字搜索那么highlight是为空的，所以要判断一下，要不会出现空指针
+            if(null!=highlight){
+                //取出higlight中的第一个高亮元素
+                String skuName = highlight.get("skuName").get(0);
+                //赋给source中的字段
+                source.setSkuName(skuName);
+            }
 
             pmsSearchSkuInfoList.add(source);
         }
@@ -70,7 +75,7 @@ public class SearchServiceImpl implements SearchService {
 
         String catalog3Id = pmsSearchParam.getCatalog3Id();
         String keyword = pmsSearchParam.getKeyword();
-        List<PmsSkuAttrValue> skuAttrValueList = pmsSearchParam.getSkuAttrValueList();
+        String[] skuAttrValueList = pmsSearchParam.getValueId();
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         //bool
@@ -78,8 +83,8 @@ public class SearchServiceImpl implements SearchService {
         //filter / term /terms
         //条件1 首先判断搜索条件是否为空
         if(null != skuAttrValueList){
-            for (PmsSkuAttrValue pmsSkuAttrValue : skuAttrValueList) {
-                TermQueryBuilder termQueryBuilder = new TermQueryBuilder("skuAttrValueList.valueId",pmsSkuAttrValue.getValueId());
+            for (String pmsSkuAttrValue : skuAttrValueList) {
+                TermQueryBuilder termQueryBuilder = new TermQueryBuilder("skuAttrValueList.valueId",pmsSkuAttrValue);
                 boolQueryBuilder.filter(termQueryBuilder);
             }
         }
@@ -108,7 +113,9 @@ public class SearchServiceImpl implements SearchService {
         highlightBuilder.field("skuName");
         highlightBuilder.postTags("</span>");
         searchSourceBuilder.highlighter(highlightBuilder);
-
+        //es的聚合函数，去重数据
+       /* TermsAggregationBuilder name = AggregationBuilders.terms("name").field("skuAttrValueList.valueId");
+        searchSourceBuilder.aggregation(name);*/
         //转化为dsl的json格式的语句
         String dslstr = searchSourceBuilder.toString();
         System.out.println(dslstr);

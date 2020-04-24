@@ -148,16 +148,20 @@ public class SkuServiceImpl implements SkuService {
             String token = UUID.randomUUID().toString();
             System.out.println("ip为"+ip+"的线程"+Thread.currentThread().getName()+"访问商品详情"+"redis中无值，数据从数据库查"+"uuid="+token);
             String set = jedis.set(LOCK_KEY, token, "nx", "px", 10000);
+            //如果返回OK,说明加锁成功
             if(StringUtils.isNotBlank(set) && set.equals("OK")){
                 //缓存为空就从数据库中取值，然后返回客户端并且把数据存入缓存
                 System.out.println("ip为"+ip+"的线程"+Thread.currentThread().getName()+"获取锁成功，进入分布式锁");
 
+                //这个睡眠时间是为了测试在自己的key已过期的时候，自己还没有执行完业务，等到执行完会不会删除别的线程的key，为了测试lua脚本
                 try {
                     Thread.sleep(9980);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                //从数据库中查
                 pmsSkuInfo = getSkuByDb(skuId);
+                //如果从数据库中查出来的数据不为空，存入缓存，如果为空，就在缓存中存一个空值
                 if(null!=pmsSkuInfo){
                     //用JSON.toJSONString()解析对象时，对象不能为空，所以加了判断
                     System.out.println("ip为"+ip+"的线程"+Thread.currentThread().getName()+"发现数据库有值，将数据库中的值放入缓存");
@@ -173,6 +177,7 @@ public class SkuServiceImpl implements SkuService {
 
                 //lua脚本，防止在高并发的时候误删别的线程的key值,如果eval返回是1表示删除了自己的key,如果发现自己的key过期了，就不删除，防止删除别的线程的key,就返回0
                 //用lua脚本在查询到key的同时删除key
+                //Collections.singletoList()可以在其中创建不可变List的单个元素。用这个方法创建的列表也是不可变的，所以你确定在任何情况下列表中不会有更多的元素。
                 String script = "if redis.call('get',KEYS[1])==ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
                 Object eval = jedis.eval(script, Collections.singletonList(LOCK_KEY), Collections.singletonList(token));
 

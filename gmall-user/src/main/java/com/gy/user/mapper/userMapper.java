@@ -12,5 +12,5 @@ import java.util.List;
  */
 public interface userMapper extends Mapper<UmsMember> {
 
-    List<UmsMember> queryAllUser();
+
 }

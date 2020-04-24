@@ -1,3 +1,4 @@
+/*
 package com.gy.user.service.impl;
 
 
@@ -13,9 +14,11 @@ import tk.mybatis.mapper.entity.Example;
 import javax.annotation.Resource;
 import java.util.List;
 
+*/
 /**
  * Created by gaoyong on 2020/3/15.
- */
+ *//*
+
 @Service
 public class userServiceImpl implements userService {
 
@@ -55,3 +58,4 @@ public class userServiceImpl implements userService {
         return i;
     }
 }
+*/
