@@ -113,4 +113,19 @@ public class userServiceImpl implements userService {
             jedis.setex(KEY+id+TOKEN,60*60,token);
         }
     }
+
+    @Override
+    public int insertUserInfo(UmsMember umsMember) {
+        int i=0;
+        if(null!=umsMember){
+            i = userMapper.insertSelective(umsMember);
+        }
+        return i;
+    }
+
+    @Override
+    public UmsMember getUserInfo(UmsMember umsMember1) {
+        UmsMember umsMember = userMapper.selectOne(umsMember1);
+        return umsMember;
+    }
 }

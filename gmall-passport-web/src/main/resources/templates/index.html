@@ -66,7 +66,7 @@
                     <input type="password" placeholder=" 密码" class="password" id="password"/>
                 </li>
                 <li class="bri">
-                    <a href="">忘记密码</a>
+                    <a href="https://api.weibo.com/oauth2/authorize?client_id=1826296733&response_type=code&redirect_uri=http://passport.gmall.com:8071/vlogin"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1587903794878&di=885760df78dc78d7cde1a2805887e135&imgtype=0&src=http%3A%2F%2Fg.hiphotos.baidu.com%2Fbaike%2Fs%3D250%2Fsign%3D1b8f77d7f0deb48fff69a6dbc01e3aef%2Fc83d70cf3bc79f3d1ea90986b9a1cd11728b2938.jpg"></a>
                 </li>
                 <li class="ent">
                     <button class="btn2" id="btn2" type="button"><a href="javascript:submitLogin();" class="a">登 &nbsp; &nbsp;录</a></button>
@@ -139,7 +139,7 @@
             if(token == "failed"){
                 alert("对不起，用户名密码不正确，请重新输入");
             }else{
-                alert(token);
+                alert("welcome to gmall");
                 window.location.href = $("#ReturnUrl").val()+"?token="+token;
             }
         });

@@ -5,6 +5,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.gy.api.bean.UmsMember;
 import com.gy.api.service.userService;
+import com.gy.util.HttpClientUtil;
 import com.gy.util.MD5Util;
 import com.gy.webutil.util.JwtUtil;
 import org.apache.logging.log4j.util.Strings;
@@ -18,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -31,6 +33,72 @@ public class PassPortController {
 
     @Reference
     private userService userService;
+
+
+    @RequestMapping("/vlogin")
+    public String vlogin(String code){
+
+        //根据第三方授权码去换取access_token
+        String url = "https://api.weibo.com/oauth2/access_token?";
+        Map<String, String> map = new HashMap<>();
+        //APPKEY
+        map.put("client_id","1826296733");
+        //APP SECRET
+        map.put("client_secret","82bd1fd39ea82477d9929d9e7cf9a660");
+        //回调地址
+        map.put("redirect_uri","http://passport.gmall.com:8071/vlogin");
+        //授权码
+        map.put("code",code);
+        String access = HttpClientUtil.doPost(url, map);
+        Map<String,Object> accessMap = JSON.parseObject(access, Map.class);
+        String uid = String.valueOf(accessMap.get("uid"));
+        String access_token = String.valueOf(accessMap.get("access_token"));
+        //用accessToken去查询第三方用户信息
+        String userUrl = "https://api.weibo.com/2/users/show.json?access_token="+access_token+"&uid="+uid;
+        String users = HttpClientUtil.doGet(userUrl);
+        Map<String,Object> userMap = JSON.parseObject(users, Map.class);
+        //把用户信息存入数据库中
+        UmsMember umsMember = new UmsMember();
+        umsMember.setCreateTime(new Date());
+        String gender = "0";
+        if(userMap.get("gender").equals("m")){
+            gender = "1";
+        }
+        umsMember.setGender(gender);
+        umsMember.setAccessCode(code);
+        umsMember.setAccessToken(access_token);
+        umsMember.setSourceType("1");
+        umsMember.setSourceUid(uid);
+        umsMember.setNickname(String.valueOf(userMap.get("screen_name")));
+
+        //在存入之前先检查数据库中是否已经存在此用户
+        UmsMember umsMember1 = new UmsMember();
+        umsMember1.setSourceUid(uid);
+        UmsMember umsMemberCheck = userService.getUserInfo(umsMember1);
+        Long key = 0L;
+        if(null==umsMemberCheck){
+            //添加用户信息
+              String.valueOf(userService.insertUserInfo(umsMember));
+              UmsMember userInfo = userService.getUserInfo(umsMember1);
+              key = userInfo.getId();
+        }else{
+            key = umsMemberCheck.getId();
+        }
+        //用jwt生成token
+        //ip加密
+        String ip = MD5Util.md5Encrypt32Lower("127.0.0.1");
+        //key加密
+        String keyName = MD5Util.md5Encrypt32Lower("gmall0314");
+        Map<String, Object> tokenmap = new HashMap<>();
+        tokenmap.put("memberId",key);
+        tokenmap.put("nickname",umsMember.getNickname());
+        String token = JwtUtil.encode(keyName, tokenmap, ip);
+
+        //把生成的token存入缓存中
+        userService.pushCache(key,token);
+        return "redirect:http://search.gmall.com:8085/index?token="+token;
+    }
+
 
     @RequestMapping("/verify")
     @ResponseBody

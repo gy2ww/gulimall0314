@@ -27,4 +27,18 @@ public interface userService {
      * @param token
      */
     void pushCache(Long id, String token);
+
+    /**
+     * 添加用户信息
+     * @param umsMember
+     */
+    int insertUserInfo(UmsMember umsMember);
+
+    /**
+     * 查询某个用户信息
+     * @param umsMember1
+     * @return
+     */
+    UmsMember getUserInfo(UmsMember umsMember1);
+
 }
