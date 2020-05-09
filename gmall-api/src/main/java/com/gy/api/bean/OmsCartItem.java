@@ -32,6 +32,9 @@ public class OmsCartItem implements Serializable{
     private String productBrand;
     private String productSn;
     private String productAttr;
+    /**
+     * 单价商品的总价，不是结算总价
+     */
     @Transient
     private BigDecimal totalPrice;
 

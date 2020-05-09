@@ -14,6 +14,7 @@
     <header>
 
         <input type="text" th:value="${skuSaleAttrValueListBySpu}" id="valuesSku" />
+        <input type="text" th:value="${skuId}" id = "skuId"/>
         <div class="min">
             <ul class="header_ul_left">
                 <li class="glyphicon glyphicon-home"><a href="shouye.html" class="aa">首页</a></li>
@@ -58,7 +59,7 @@
                 </li>
             </ul>
             <ul class="header_ul_right">
-                <li style="border: 0;"><a href="../登录页面\index.html" class="aa">你好，请登录</a></li>
+                <li style="border: 0;"><a onclick="passport()" >你好，请登录</a></li>
                 <li><a href="../注册页面\index.html" style="color: red;">免费注册</a> |</li>
                 <li><a href="javascript:;" class="aa">我的订单</a> |</li>
 
@@ -1045,6 +1046,11 @@
         $("#itemForm").submit();
     }
 
+    function passport(){
+       var skuId =  $("#skuId").attr("value");
+       window.location.href = "http://passport.gmall.com:8071/index?ReturnUrl=http://item.gmall.com:8082/"+skuId+".html"
+
+    }
     function switchSkuId() {
       /*  // 被选中属性层级选择器 选中redborder下的所有div
          var checkDivs = $(".redborder div");

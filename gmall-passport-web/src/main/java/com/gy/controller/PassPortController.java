@@ -77,8 +77,8 @@ public class PassPortController {
         UmsMember umsMemberCheck = userService.getUserInfo(umsMember1);
         Long key = 0L;
         if(null==umsMemberCheck){
-            //添加用户信息
-              String.valueOf(userService.insertUserInfo(umsMember));
+            //添加用户信息 如果空的话就先插入数据在查询
+              userService.insertUserInfo(umsMember);
               UmsMember userInfo = userService.getUserInfo(umsMember1);
               key = userInfo.getId();
         }else{

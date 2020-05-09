@@ -41,4 +41,11 @@ public interface userService {
      */
     UmsMember getUserInfo(UmsMember umsMember1);
 
+    /**
+     * 根据地址id查询对应的收货地址信息
+     * @param deliveryAddressId
+     * @return
+     */
+    UmsMemberReceiveAddress getReceiverAddressById(String deliveryAddressId);
+
 }

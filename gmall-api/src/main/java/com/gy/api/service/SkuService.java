@@ -4,6 +4,7 @@ import com.gy.api.bean.PmsProductImage;
 import com.gy.api.bean.PmsProductSaleAttr;
 import com.gy.api.bean.PmsSkuInfo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -52,4 +53,12 @@ public interface SkuService {
      * @return
      */
     List<PmsSkuInfo> getAllSku();
+
+    /**
+     * 验价验库存
+     * @param productSkuId
+     * @param price
+     * @return
+     */
+    boolean checkPrice(String productSkuId, BigDecimal price);
 }

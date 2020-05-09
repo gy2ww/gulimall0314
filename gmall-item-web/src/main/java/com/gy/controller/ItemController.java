@@ -44,6 +44,7 @@ public class ItemController {
         String ip = request.getRemoteAddr();
         PmsSkuInfo pmsSkuInfo = skuService.getSkuById(skuId,ip);
         modelMap.put("skuInfo", pmsSkuInfo);
+        modelMap.put("skuId",pmsSkuInfo.getId());
         //根据product_id查询spu的销售属性列表
         List<PmsProductSaleAttr> pmsProductSaleAttrList = spuService.spuSaleAttrListCheckBySku(pmsSkuInfo.getSpuId(), pmsSkuInfo.getId());
         modelMap.put("spuSaleAttrListCheckBySku", pmsProductSaleAttrList);

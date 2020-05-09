@@ -7,9 +7,12 @@ import com.gy.api.bean.OmsCartItem;
 import com.gy.api.bean.PmsSkuInfo;
 import com.gy.api.service.CartService;
 import com.gy.api.service.SkuService;
+import com.gy.util.MD5Util;
 import com.gy.webutil.annotations.NeedLogin;
 import com.gy.webutil.util.CookieUtil;
+import com.gy.webutil.util.JwtUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by gaoyong on 2020/4/18.
@@ -31,16 +35,6 @@ public class CartController {
     SkuService skuService;
     @Reference
     CartService cartService;
-
-    @RequestMapping("/toTrade")
-    @NeedLogin(LoginSucess = true)
-    public String toTrade(HttpServletRequest request){
-
-        String memberId = (String) request.getAttribute("memberId");
-        String password = (String) request.getAttribute("password");
-
-        return "tradeTest";
-    }
 
     @RequestMapping("/checkCart")
     @NeedLogin(LoginSucess = false)
@@ -85,6 +79,7 @@ public class CartController {
 
 
     @RequestMapping("/addToCart")
+    @NeedLogin(LoginSucess = false)
     public String addToCart(String skuId, int quantity, HttpServletRequest request, HttpServletResponse response){
         StringBuffer requestURL = request.getRequestURL();
         //根据skuId查询相关的sku信息
@@ -103,12 +98,12 @@ public class CartController {
         omsCartItem.setProductPic(skuInfo.getSkuDefaultImg());
         omsCartItem.setProductSkuId(skuInfo.getId());
         omsCartItem.setQuantity(new BigDecimal(quantity));
-        omsCartItem.setMemberId("1");
+        omsCartItem.setMemberId(String.valueOf(request.getAttribute("memberId")));
         //TODO:还没有做用户系统，暂时没有memberId，以后加上
-        String memberId = "1";//Strings.EMPTY;
+        String memberId = String.valueOf(request.getAttribute("memberId"));//Strings.EMPTY;
         List<OmsCartItem> omsCartItems = new ArrayList<>();
         //判断是否登录
-        if(StringUtils.isBlank(memberId)){
+        if(StringUtils.isBlank(memberId) || memberId.equals("null")){
             //获取cookie中已有的购物车信息
              String cartToCookie = CookieUtil.getCookieValue(request, "cartToCookie", true);
             if(StringUtils.isBlank(cartToCookie)){
@@ -166,34 +161,47 @@ public class CartController {
     }
 
     @RequestMapping("/cartList")
-    public  String cartList(String memberId,HttpServletRequest request, ModelMap map){
+    @NeedLogin(LoginSucess = false)
+    public  String cartList(String token,HttpServletRequest request, ModelMap map){
 
+        //j解析token
+        String keyName = MD5Util.md5Encrypt32Lower("gmall0314");
+        String ip = MD5Util.md5Encrypt32Lower("127.0.0.1");
+        String memberId = Strings.EMPTY;
+        if(StringUtils.isNotBlank(token)){
+            Map<String, Object> decode = JwtUtil.decode(token, keyName, ip);
+            memberId = String.valueOf(decode.get("memberId"));
+        }
         List<OmsCartItem> omsCartItemList = new ArrayList<>();
-        memberId = "1";
         if(StringUtils.isNotBlank(memberId)){
             //从缓存取数据,用户已登录
             omsCartItemList=cartService.getCartListCache(memberId);
         }else{
             //用户未登录，从cookie中取数据
             String cartToCookie = CookieUtil.getCookieValue(request, "cartToCookie", true);
-            List<OmsCartItem> omsCartItemList1 = JSON.parseArray(cartToCookie, OmsCartItem.class);
-            for (OmsCartItem omsCartItem : omsCartItemList1) {
-                omsCartItemList.add(omsCartItem);
+            if(StringUtils.isNotBlank(cartToCookie)){
+                List<OmsCartItem> omsCartItemList1 = JSON.parseArray(cartToCookie, OmsCartItem.class);
+                for (OmsCartItem omsCartItem : omsCartItemList1) {
+                    omsCartItemList.add(omsCartItem);
+                }
             }
         }
-        //计算购物车结算总价
-        BigDecimal totalAmount = getTotalAmount(omsCartItemList);
+        if(omsCartItemList.size()!=0){
+            //计算购物车结算总价
+            for (OmsCartItem omsCartItem : omsCartItemList) {
+                omsCartItem.setTotalPrice(omsCartItem.getPrice().multiply(omsCartItem.getQuantity()));
+            }
+            BigDecimal totalAmount = getTotalAmount(omsCartItemList);
+            map.put("totalAmount",totalAmount);
+        }
 /*
         for (OmsCartItem omsCartItem : omsCartItemList) {
             omsCartItem.setTotalPrice(omsCartItem.getPrice().multiply(omsCartItem.getQuantity()));
         }
 */
-
-        map.put("totalAmount",totalAmount);
         map.put("cartList",omsCartItemList);
+        map.put("token",token);
         return "cartList";
 
     }
-
-
 }

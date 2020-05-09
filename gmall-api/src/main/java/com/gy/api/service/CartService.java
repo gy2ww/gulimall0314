@@ -2,6 +2,7 @@ package com.gy.api.service;
 
 import com.gy.api.bean.OmsCartItem;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -50,4 +51,19 @@ public interface CartService {
      * @param omsCartItem
      */
     void checkCart(OmsCartItem omsCartItem);
+
+    /**
+     * 根据memberId查询用户购物车中勾选的商品信息
+     * @param memberId
+     * @return
+     */
+    List<OmsCartItem> getCartListByMemberId(String memberId);
+
+    /**
+     * 删除购物车商品
+     * @param productSkuId
+     * @param productQuantity
+     */
+    void delProduct(String MemberId,String productSkuId, BigDecimal productQuantity);
+
 }
