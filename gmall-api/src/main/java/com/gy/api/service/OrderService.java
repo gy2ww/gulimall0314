@@ -27,4 +27,17 @@ public interface OrderService {
      */
     void saveOrder(OmsOrder omsOrder);
 
+    /**
+     * 根据订单号查询订单信息
+     * @param outTradeNo
+     * @return
+     */
+    OmsOrder getOrderByOutTradeNo(String outTradeNo);
+
+    /**
+     * 支付成功后修改订单状态
+     * @param orderSn
+     */
+    void updateOrderStatus(String orderSn);
+
 }

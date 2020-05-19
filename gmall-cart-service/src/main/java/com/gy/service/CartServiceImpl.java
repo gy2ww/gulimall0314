@@ -13,6 +13,10 @@ import redis.clients.jedis.Jedis;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,6 +71,7 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public void syncCache(String memberId) {
+
 
         Example example = new Example(OmsCartItem.class);
         example.createCriteria().andEqualTo("memberId",memberId);
@@ -140,7 +145,6 @@ public class CartServiceImpl implements CartService{
             if(StringUtils.isNotBlank(s)){
                 //缓存不为空就从缓存中取值
                omsCartItemList = JSON.parseObject(s, new TypeReference<List<OmsCartItem>>(){});
-
             }else{
                 //缓存为空从数据库获取再存入缓存
                 OmsCartItem omsCartItem = new OmsCartItem();

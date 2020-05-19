@@ -8,9 +8,11 @@ import com.gy.api.service.CartService;
 import com.gy.api.service.OrderService;
 import com.gy.mapper.OmsOrderItemMapper;
 import com.gy.mapper.OmsOrderMapper;
+import com.gy.mq.SendMq;
 import com.gy.util.RedisUtils;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -32,6 +34,8 @@ public class OrderServiceImpl implements OrderService {
     private OmsOrderItemMapper omsOrderItemMapper;
     @Reference
     private CartService cartService;
+    @Resource
+    private SendMq sendMq;
     @Override
     public String genTradeCode(String memberId) {
 
@@ -92,5 +96,34 @@ public class OrderServiceImpl implements OrderService {
                // cartService.delProduct(omsOrder.getMemberId(),omsOrderItem.getProductSkuId(),omsOrderItem.getProductQuantity());
             }
         }
+    }
+
+    @Override
+    public OmsOrder getOrderByOutTradeNo(String outTradeNo) {
+
+        OmsOrder order = new OmsOrder();
+        order.setOrderSn(outTradeNo);
+        OmsOrder order1 = omsOrderMapper.selectOne(order);
+        return order1;
+    }
+
+    @Override
+    public void updateOrderStatus(String orderSn) {
+
+        int i = 0;
+        OmsOrder omsOrder1 = new OmsOrder();
+        omsOrder1.setOrderSn(orderSn);
+        OmsOrder omsOrder2 = omsOrderMapper.selectOne(omsOrder1);
+        if(!omsOrder2.getStatus().equals("1")){
+            OmsOrder omsOrder = new OmsOrder();
+            omsOrder.setStatus("1");
+            Example example = new Example(OmsOrder.class);
+            example.createCriteria().andEqualTo("orderSn",orderSn);
+            //更新订单状态
+             i = omsOrderMapper.updateByExampleSelective(omsOrder, example);
+
+        }
+            //更新成功后发送消息到库存系统
+            sendMq.ToSendMq("ORDER_PAYMENT",orderSn,0,0);
     }
 }

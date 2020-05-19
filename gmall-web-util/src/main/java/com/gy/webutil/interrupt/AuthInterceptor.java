@@ -30,7 +30,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        System.out.println("进来了");
+        //System.out.println("进来了");
 
         //判断这个请求需不需要拦截
         if (handler instanceof HandlerMethod) {

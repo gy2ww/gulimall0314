@@ -1,7 +1,7 @@
 package com.gy.controller;
 
-import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.gy.api.bean.OmsCartItem;
 import com.gy.api.bean.OmsOrder;
 import com.gy.api.bean.OmsOrderItem;
@@ -11,6 +11,8 @@ import com.gy.api.service.OrderService;
 import com.gy.api.service.SkuService;
 import com.gy.api.service.userService;
 import com.gy.webutil.annotations.NeedLogin;
+import com.gy.webutil.util.CookieUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -124,7 +126,13 @@ public class OrderController {
         //查询用户的地址信息
         List<UmsMemberReceiveAddress> userAddressList = userService.getReceiveAddressByMemberId(Long.valueOf(memberId));
         //查询用户购物车的数据
+        //如果用户在没有登录的状态添加过购物车商品，那么如果登录了应该把cookie中的商品同步到登录后的购物车中
         List<OmsCartItem> orderDetailList = cartService.getCartListCache(memberId);
+        String cartToCookie = CookieUtil.getCookieValue(request, "cartToCookie", true);
+        if(StringUtils.isNotBlank(cartToCookie)){
+            List<OmsCartItem> omsCartItemList = JSON.parseArray(cartToCookie, OmsCartItem.class);
+            orderDetailList.addAll(omsCartItemList);
+        }
         //所有订单总额
         BigDecimal totalAmount = new BigDecimal("0");
         //每样商品的总价

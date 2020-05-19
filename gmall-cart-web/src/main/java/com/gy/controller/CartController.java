@@ -38,9 +38,9 @@ public class CartController {
 
     @RequestMapping("/checkCart")
     @NeedLogin(LoginSucess = false)
-    public String checkCart(String isChecked,String skuId,ModelMap map){
+    public String checkCart(HttpServletRequest request,String isChecked,String skuId,ModelMap map){
 
-        String memberId = "1";
+        String memberId = String.valueOf(request.getAttribute("memberId"));
         OmsCartItem omsCartItem = new OmsCartItem();
         omsCartItem.setProductSkuId(skuId);
         omsCartItem.setMemberId(memberId);
